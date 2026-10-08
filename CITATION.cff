@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use MARS in your research, please cite this software."
+title: "MARS: RNA modification detection from Nanopore direct-RNA sequencing data"
+abstract: >-
+  MARS is an analysis pipeline for detecting RNA modifications (m6A, m5C, m1A,
+  pseudouridine, ac4C, f5C, h5C) from Oxford Nanopore direct-RNA sequencing
+  data. It extracts joint quality-value and substitution-rate features around
+  candidate sites and scores them with gradient-boosted trees.
+type: software
+version: 4.0.0
+date-released: "2026-10-08"
+license: MIT
+repository-code: "https://github.com/niujiale/MARS"
+url: "https://github.com/niujiale/MARS"
+keywords:
+  - nanopore
+  - RNA modification
+  - epitranscriptomics
+  - m6A
+  - m5C
+  - bioinformatics
+authors:
+  - name: "MARS Team"

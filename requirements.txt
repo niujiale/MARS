@@ -1,0 +1,36 @@
+# ==============================================================================
+# MARS 4.0.0 Python Dependencies
+# ==============================================================================
+# This file lists runtime dependencies for a plain pip environment. It does NOT
+# install the `mars` / `mars-predict` / `xgb_model_pred` commands — for that,
+# install the package itself:
+#
+#   pip install -e '.[train]'        # or: bash install.sh
+#
+# `pyproject.toml` is the authoritative dependency declaration; the bounds here
+# mirror it plus the `train` extra.
+#
+# Install with GPU:
+#   bash install.sh venv --gpu --cuda=auto
+# or manually:
+#   pip install --index-url https://download.pytorch.org/whl/cu121 torch
+# ==============================================================================
+
+# Core dependencies
+numpy>=1.20.0
+scipy>=1.7.0
+pandas>=1.3.0
+pysam>=0.19.0
+xgboost>=1.5.0
+biopython>=1.79
+tqdm>=4.60.0
+
+# Training extras: required by `mars train` (= the [train] extra)
+matplotlib>=3.4.0
+seaborn>=0.11.0
+scikit-learn>=1.0.0
+
+# Optional: PyTorch for GPU-accelerated feature-statistics.
+# NOT pinned here because the correct wheel depends on your server's CUDA
+# version. Use install.sh --gpu --cuda=<ver>, or pip install via the
+# PyTorch index URL that matches your CUDA (118/121/124/126/128/cpu).

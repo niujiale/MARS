@@ -1,0 +1,33 @@
+# Keep the source distribution self-contained: a user who downloads the
+# release sdist or source archive must be able to run the bundled example and
+# use the pretrained models without cloning anything.
+
+include README.md
+include CHANGELOG.md
+include RELEASE.md
+include CITATION.cff
+include LICENSE
+include requirements.txt
+include environment.yml
+include install.sh
+include run_example.sh
+
+# run_example.sh falls back to these when the console scripts are not
+# installed, so an unpacked release has to carry them or the bundled example
+# cannot run at all.
+include MARS_main.py
+
+recursive-include pretrained_models *.json
+recursive-include pretrained_models readme
+recursive-include data/example *.fa *.fa.fai *.fastq
+recursive-include tests *.py
+recursive-include scripts *.py
+recursive-include utils *.py
+
+global-exclude __pycache__/*
+global-exclude *.py[cod]
+prune .github
+prune .pytest_cache
+prune _bench
+prune data/example/output
+prune data/pred

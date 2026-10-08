@@ -1,0 +1,15 @@
+# Git stores text with LF. Keep LF in the working tree too, whatever platform
+# the checkout happens on: MARS runs on Linux, and a shell script that arrives
+# with CRLF line endings fails there with "bad interpreter: /bin/bash^M".
+* text=auto eol=lf
+
+*.sh text eol=lf
+*.py text eol=lf
+
+# Byte-exact inputs and outputs. Feature archives and alignments have to round
+# trip untouched -- the regression tests compare them value by value, and a
+# line-ending rewrite inside a binary payload would corrupt them silently.
+*.npz binary
+*.bam binary
+*.bai binary
+*.whl binary

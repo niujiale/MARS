@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, dev]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: pytest (python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      # The regression suite runs the real pipeline, so it needs the aligner
+      # and samtools; without them the tests skip and prove nothing.
+      - name: Install minimap2 and samtools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends minimap2 samtools
+
+      - name: Install MARS
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e '.[train,dev]'
+
+      - name: Report environment
+        run: mars doctor
+
+      - name: Check console scripts are installed
+        run: |
+          set -euo pipefail
+          for cmd in mars mars-pipeline mars-predict mars-train mars-doctor \
+                     xgb_model_pred xgb_model nfl-py; do
+            command -v "$cmd" > /dev/null || { echo "missing command: $cmd"; exit 1; }
+          done
+          mars --version
+          mars-predict --version
+          xgb_model_pred --version
+          nfl-py --version
+
+      - name: Run tests
+        run: pytest tests/ -v
+
+      - name: End-to-end example
+        run: bash run_example.sh --clean
+
+  build:
+    name: build distributions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build sdist and wheel
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build
+          twine check dist/*
+
+      - name: Verify the sdist carries the pretrained models
+        run: |
+          set -euo pipefail
+          sdist=$(ls dist/*.tar.gz)
+          n=$(tar -tzf "$sdist" | grep -c 'pretrained_models/.*\.json' || true)
+          echo "pretrained model files in sdist: $n"
+          test "$n" -gt 0
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*
